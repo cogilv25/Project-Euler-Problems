@@ -3,7 +3,6 @@
 #include <algorithm>
 //376 <- Just so I know if I break it
 
-
 int Problem54::cardValueToInt(char value)
 {
 	switch (value)
@@ -27,190 +26,223 @@ int Problem54::cardValueToInt(char value)
 	}
 }
 
-std::vector<int> Problem54::getHandRank(std::vector<int> hand, int * count, bool flush)
+bool Problem54::loadFile(std::string filename)
+{
+	std::ifstream file(filename);
+	if (!file.is_open())
+		return false;
+
+	char round[30];
+	for (int i = 0; i < rounds; i++)
+	{
+		file.getline(round, 30);
+		for (int hand = 0; hand < 2; hand++)
+		{
+			Hand* cur = &hands[i * 2 + hand];
+			int suit = round[hand * 15 + 1];
+			for (int card = 0; card < 5; card++)
+			{
+				cur->cards[card] = cardValueToInt(round[hand * 15 + card * 2 + card]);
+				cur->counts[cur->cards[card]]++;
+				if (suit != round[hand * 15 + card * 2 + card + 1])
+					cur->flush = false;
+			}
+		}
+	}
+	file.close();
+	return true;
+}
+
+
+bool Problem54::getStraight(Hand hand)
+{
+	//Ace is a pain... I could wrap around but then what happens if
+	//I get K,A,2,3,4
+	int c = 0;
+	int prev = hand.cards[0] + 1;
+	if (hand.cards[0] == 13 && hand.cards[4] == 1)
+	{
+		c = 2;
+		prev = hand.cards[1];
+	}
+	for (; c < 5; c++)
+	{
+		if (!(hand.cards[c] + 1 == prev))
+			return false;
+		prev = hand.cards[c];
+	}
+	return true;
+}
+
+std::vector<int> Problem54::getRank(Hand hand)
 {
 	//Vector containing the Hands rank and then the cards in the 
 	//appropriate compare order
 	std::vector<int> rank;
 	//If all cards are the same suit and the lowest card is a Ten
 	//then it must be a royal flush
-	std::sort(hand.begin(), hand.end(), std::greater<int>());
-	if (flush && hand[4] == 9)
+	std::sort(hand.cards.begin(), hand.cards.end(), std::greater<int>());
+	if (hand.flush && hand.cards[4] == 9)
 	{
 		rank.push_back(10);
 		return rank;
 	}
 
-	bool straight=true;
-	int prev = hand[0] + 1;
-	int sc = 0;
+	bool straight = getStraight(hand);
 
-	//Ace is a pain... I could wrap around but then what happens if
-	// I get K,A,2,3,4
-	if (hand[0] == 13 && hand[4] == 1)
-	{ 
-		sc = 2; 
-		prev = hand[1]; 
-	}
-
-
-	for (; sc < 5; sc++)
-	{
-		if (!(hand[sc] + 1 == prev))
-			straight = false;
-		prev = hand[sc];
-	}
 	//If flush we can rule out cards with the same value
-	if (flush)
+	if (straight)
 	{
-		if (straight)
+		if (hand.flush)
 		{
 			rank.push_back(9);
-			if (hand[0] == 13 && hand[4] == 1)
-				rank.push_back(4);
-			else
-				rank.push_back(hand[0]);
+			//If the straight contains a low A the highest card is a 5
+			hand.cards[0] == 13 && hand.cards[4] == 1 ?
+				rank.push_back(4) : rank.push_back(hand.cards[0]);
 		}
-		else
-		{
-			rank.push_back(6);
-			for (int j = 0; j < 5; j++)
-				rank.push_back(hand[j]);
-		}
+		rank.push_back(5);
+		//If the straight contains a low A the highest card is a 5
+		hand.cards[0] == 13 && hand.cards[4] == 1 ?
+			rank.push_back(4) : rank.push_back(hand.cards[0]);
 		return rank;
 	}
-	else
-	{
-		if (straight)
-		{
-			rank.push_back(5);
-			if (hand[0] == 13 && hand[4] == 1)
-				rank.push_back(4);
-			else
-				rank.push_back(hand[0]);
-		}
 
-		for (int i = 13; i > 0; i--)
+	if (hand.flush)
+	{
+		rank.push_back(6);
+		for (int j = 0; j < 5; j++)
+			rank.push_back(hand.cards[j]);
+		return rank;
+	}
+
+	//Check for duplicate card values (pairs, three of a kind, etc)
+	for (int i = 13; i > 0; i--)
+	{
+		if (hand.counts[i] == 4)
 		{
-			if (count[i] == 4)
+			rank.push_back(8);
+			rank.push_back(i);
+			rank.push_back(hand.cards[0] == i ? hand.cards[4] : hand.cards[0]);
+			return rank;
+		}
+		
+		if (hand.counts[i] == 3)
+		{
+			int threeOfAKind = i;
+			for (i--; i > 0; i--)
 			{
-				rank.push_back(8);
-				rank.push_back(i);
-				rank.push_back(hand[0] == i ? hand[4] : hand[0]);
-				return rank;
-			}
-			else if (count[i] == 3)
-			{
-				int threeOfAKind = i;
-				i--;
-				for (; i > 0; i--)
+				if (hand.counts[i] == 2)
 				{
-					if (count[i] == 2)
-					{
-						rank.push_back(7);
-						rank.push_back(threeOfAKind);
-						rank.push_back(i);
-						return rank;
-					}
+					rank.push_back(7);
+					rank.push_back(threeOfAKind);
+					rank.push_back(i);
+					return rank;
 				}
-				rank.push_back(4);
-				rank.push_back(threeOfAKind);
-				for (int j = 0; j < 5; j++)
-					if (hand[j] != threeOfAKind)
-						rank.push_back(hand[j]);
-				return rank;
 			}
-			else if (count[i] == 2)
+			rank.push_back(4);
+			rank.push_back(threeOfAKind);
+			if (hand.cards[1] != threeOfAKind)
 			{
-				int pair = i;
-				i--;
-				for (; i > 0; i--)
-				{
-					if (count[i] == 3)
-					{
-						rank.push_back(7);
-						rank.push_back(i);
-						rank.push_back(pair);
-						return rank;
-					}
-					if (count[i] == 2)
-					{
-						rank.push_back(3);
-						rank.push_back(pair);
-						rank.push_back(i);
-						for (int j = 0; j < 5; j++)
-							if (hand[j] != pair && hand[j] != i)
-								rank.push_back(hand[j]);
-						return rank;
-					}
-				}
-				rank.push_back(2);
-				rank.push_back(pair);
-				for (int j = 0; j < 5; j++)
-					if (hand[j] != pair)
-						rank.push_back(hand[j]);
-				return rank;
+				rank.push_back(hand.cards[1]);
+				rank.push_back(hand.cards[0]);
 			}
+			else if(hand.cards[3] != threeOfAKind)
+			{
+				rank.push_back(hand.cards[4]);
+				rank.push_back(hand.cards[3]);
+			}
+			else
+			{
+				rank.push_back(hand.cards[4]);
+				rank.push_back(hand.cards[0]);
+			}
+			return rank;
+		}
+		
+		if (hand.counts[i] == 2)
+		{
+			int pair = i;
+			for (i--; i > 0; i--)
+			{
+				if (hand.counts[i] == 3)
+				{
+					rank.push_back(7);
+					rank.push_back(i);
+					rank.push_back(pair);
+					return rank;
+				}
+				if (hand.counts[i] == 2)
+				{
+					rank.push_back(3);
+					rank.push_back(pair);
+					rank.push_back(i);
+					//We know i < pair and cards[0] is the smallest value
+					if (hand.cards[0] != i)
+						rank.push_back(hand.cards[0]);
+					else
+						hand.cards[2] == pair ? rank.push_back(hand.cards[4]) :
+							rank.push_back(hand.cards[2]);
+					return rank;
+				}
+			}
+			rank.push_back(2);
+			rank.push_back(pair);
+
+			//Iterate through cards until pair is found then
+			//skip it and the if statement in subsequent iterations
+			for (int c = 0; c < 5; c++)
+				if (hand.cards[c] != pair)
+					rank.push_back(hand.cards[c]);
+				else
+					for (c += 2; c < 5; c++)
+						rank.push_back(hand.cards[c]);
+
+			return rank;
 		}
 	}
 
 	rank.push_back(1);
 	for (int c = 0; c < 5; c++)
-		rank.push_back(hand[c]);
+		rank.push_back(hand.cards[c]);
 	return rank;
 }
 
-bool Problem54::player1Wins(char* round)
+bool Problem54::isPlayer1Winner(Hand playerHand, Hand opponentHand)
 {
-	std::vector<int> handRanks[2];
-
-	for (int player = 0; player < 2; player++)
-	{
-		std::vector<int> hand(5);
-		int cardValueCount[14] { 0 };
-		bool flush = true;
-		int suit = round[player * 15 + 1];
-		for (int card = 0; card < 5; card++)
-		{
-			hand[card] = cardValueToInt(round[player * 15 + card*2 + card]);
-			cardValueCount[hand[card]]++;
-			if (round[player * 15 + card * 2 + card + 1] != suit)
-				flush = false;
-		}
-		handRanks[player] = getHandRank(hand, cardValueCount, flush);
-	}
-
-	for (int i = 0; i < handRanks[0].size(); i++)
-		if (handRanks[0][i] > handRanks[1][i])
+	std::vector<int> playerRank, opponentRank;
+	playerRank = getRank(playerHand);
+	opponentRank = getRank(opponentHand);
+	
+	for (int r = 0; r < playerRank.size(); r++)
+		if (playerRank[r] > opponentRank[r])
 			return true;
-		else if (handRanks[0][i] < handRanks[1][i])
+		else if (playerRank[r] < opponentRank[r])
 			return false;
-
 
 	return false;
 }
 
+
 std::string Problem54::solution()
 {
-	std::ifstream file("../resources/poker.txt");
-	if (!file.is_open())
-		return "Error: Unable to open file: ../resources/poker.txt";
-
-	int count = 0;
-	char round[30];
-	try {
-		for (int i = 0; i < 1000; i++)
-		{
-			file.getline(round, 30);
-			if (player1Wins(round))
-				count++;
-		}
+	try
+	{
+		if (!loadFile("../resources/poker.txt"))
+			return "Error: Unable to open file: ../resources/poker.txt";
 	}
 	catch (std::exception e)
 	{
 		return e.what();
 	}
 
-	file.close();
-	return std::to_string(count);
+
+	int player1WinCount = 0;
+	for (int r = 0; r < rounds; r++)
+	{
+		if (isPlayer1Winner(hands[r * 2], hands[r * 2 + 1]))
+			player1WinCount++;
+	}
+
+
+	return std::to_string(player1WinCount);
 }

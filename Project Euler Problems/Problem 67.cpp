@@ -19,6 +19,7 @@ bool Problem67::loadFile(std::string filename)
 		path[i] = std::stoi(number);
 	}
 	file.close();
+	return true;
 }
 
 std::string Problem67::solution()
