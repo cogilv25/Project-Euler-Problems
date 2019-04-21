@@ -1,13 +1,16 @@
 #pragma once
-#include "Problem.h"
+#include "MaxPathSumProblem.h"
 
-class Problem18 : public Problem {
-protected:
-	int layers = 15;
-	int *factorial, *path;
-	void max(int layer = 0);
+class Problem18 : public MaxPathSumProblem {
 public:
-	virtual std::string solution();
-	virtual ~Problem18() { delete[] factorial; };
-	Problem18() { name = "Maximum path sum I"; }
+	std::string solution();
+	Problem18()
+	{ 
+		name = "Maximum path sum I"; 
+		layers = 15; 
+	}
+	~Problem18()
+	{ 
+		delete[] factorial; 
+	}
 };

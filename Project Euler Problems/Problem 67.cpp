@@ -1,21 +1,15 @@
 #include "Problem67.h"
 #include <fstream>
-
 //7273 <- Just so I know if I break it
 
 
-std::string Problem67::solution()
+bool Problem67::loadFile(std::string filename)
 {
 	std::ifstream file("../resources/triangle.txt");
 	if (!file.is_open())
-		return "Error: Unable to open file: ../resources/triangle.txt";
+		return false;
 
-	factorial = new int[layers + 1];
-	factorial[0] = 0;
-	for (int i = 1; i < layers + 1; i++)
-		factorial[i] = factorial[i - 1] + i;
-
-	path = new int[factorial[layers]];
+	//2 digits + null termination
 	char number[3];
 	for (int i = 0; i < factorial[layers]; i++)
 	{
@@ -25,7 +19,15 @@ std::string Problem67::solution()
 		path[i] = std::stoi(number);
 	}
 	file.close();
-	max(0);
+}
 
-	return std::to_string(path[0]);
+std::string Problem67::solution()
+{
+	generateFactorials(layers + 1);
+	path = new int[factorial[layers]];
+
+	if(!loadFile("../resources/triangle.txt"))
+		return "Error: Unable to open file: ../resources/triangle.txt";
+
+	return std::to_string(max());
 }

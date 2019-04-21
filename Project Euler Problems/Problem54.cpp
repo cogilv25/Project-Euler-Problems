@@ -60,7 +60,7 @@ std::vector<int> Problem54::getHandRank(std::vector<int> hand, int * count, bool
 			straight = false;
 		prev = hand[sc];
 	}
-	//If Flush we can rule out cards with the same value
+	//If flush we can rule out cards with the same value
 	if (flush)
 	{
 		if (straight)

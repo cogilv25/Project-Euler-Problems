@@ -5,27 +5,37 @@
 #include <iostream>
 #include <map>
 
-
-std::map<std::string, Problem*> problems;
+std::map<int, Problem*> problems;
 
 int main(int argc, char ** argv)
 {
-	problems["18"] = new Problem18();
-	problems["54"] = new Problem54();
-	problems["67"] = new Problem67();
-	problems["173"] = new Problem173();
+	problems[18] = new Problem18();
+	problems[54] = new Problem54();
+	problems[67] = new Problem67();
+	problems[173] = new Problem173();
 
 	if (argc == 2)
 	{
-		auto p = problems.find(argv[1]);
-		if (!(p == problems.end()))
+		try
 		{
-			std::cout << p->second->name << " (Problem " << p->first << "): " << std::endl;
-			std::cout << p->second->solution() << std::endl << std::endl;
+			int key = std::stoi(argv[1]);
+			auto p = problems.find(key);
+			if (!(p == problems.end()))
+			{
+				std::cout << p->second->name << " (Problem " << p->first << "): " << std::endl;
+				std::cout << p->second->solution() << std::endl << std::endl;
+			}
+			else
+			{
+				std::cout << "Error: Problem does not exist or has not been solved" << std::endl << std::endl;
+				std::cin.get();
+				return -1;
+			}
 		}
-		else
+		catch(std::exception e)
 		{
-			std::cout << "Error: Problem does not exist or has not been solved" << std::endl << std::endl;
+			std::cout << "Error: " << e.what();
+			std::cin.get();
 			return -1;
 		}
 	}
