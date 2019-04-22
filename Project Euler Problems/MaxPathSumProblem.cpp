@@ -17,6 +17,9 @@ int MaxPathSumProblem::max()
 	return path[0];
 }
 
+//This should be Fibonacci not factorial
+//but I'm at work so I can't fix it
+//until I get home
 void MaxPathSumProblem::generateFactorials(int n)
 {
 	factorial = new int[n];
