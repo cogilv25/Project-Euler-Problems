@@ -5,10 +5,10 @@ class MaxPathSumProblem : public Problem
 {
 protected:
 	int layers;
-	int *factorial, *path;
+	int *layerStartIndices, *path;
 
 	int max();
-	void generateFactorials(int n);
+	void generateLayerStartIndices(int layers);
 public:
 	virtual ~MaxPathSumProblem() {};
 };

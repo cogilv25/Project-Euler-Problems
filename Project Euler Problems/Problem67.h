@@ -14,6 +14,6 @@ public:
 	~Problem67()
 	{ 
 		delete[] path; 
-		delete[] factorial; 
+		delete[] layerStartIndices;
 	}
 };

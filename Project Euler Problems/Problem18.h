@@ -11,6 +11,6 @@ public:
 	}
 	~Problem18()
 	{ 
-		delete[] factorial; 
+		delete[] layerStartIndices;
 	}
 };

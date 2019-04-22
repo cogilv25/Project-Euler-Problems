@@ -11,7 +11,7 @@ bool Problem67::loadFile(std::string filename)
 
 	//2 digits + null termination
 	char number[3];
-	for (int i = 0; i < factorial[layers]; i++)
+	for (int i = 0; i < layerStartIndices[layers]; i++)
 	{
 		file.get(number, 3);
 		//Throw away space or newline
@@ -24,8 +24,8 @@ bool Problem67::loadFile(std::string filename)
 
 std::string Problem67::solution()
 {
-	generateFactorials(layers + 1);
-	path = new int[factorial[layers]];
+	generateLayerStartIndices(layers + 1);
+	path = new int[layerStartIndices[layers]];
 
 	if(!loadFile("../resources/triangle.txt"))
 		return "Error: Unable to open file: ../resources/triangle.txt";

@@ -7,8 +7,8 @@ int MaxPathSumProblem::max()
 	//the layer below it so we start at the bottom.
 	for (int layer = layers - 2; layer >= 0; layer--)
 	{
-		int *current = path + factorial[layer];
-		int *lower = path + factorial[layer + 1];
+		int *current = path + layerStartIndices[layer];
+		int *lower = path + layerStartIndices[layer + 1];
 		for (int i = 0; i < layer + 1; i++)
 		{
 			current[i] += lower[i] > lower[i + 1] ? lower[i] : lower[i + 1];
@@ -17,13 +17,10 @@ int MaxPathSumProblem::max()
 	return path[0];
 }
 
-//This should be Fibonacci not factorial
-//but I'm at work so I can't fix it
-//until I get home
-void MaxPathSumProblem::generateFactorials(int n)
+void MaxPathSumProblem::generateLayerStartIndices(int n)
 {
-	factorial = new int[n];
-	factorial[0] = 0;
+	layerStartIndices = new int[n];
+	layerStartIndices[0] = 0;
 	for (int i = 1; i < n; i++)
-		factorial[i] = factorial[i - 1] + i;
+		layerStartIndices[i] = layerStartIndices[i - 1] + i;
 }

@@ -21,6 +21,6 @@ int problem18Data[]{
 std::string Problem18::solution()
 {
 	path = problem18Data;
-	generateFactorials(layers);
+	generateLayerStartIndices(layers);
 	return std::to_string(max());
 }
