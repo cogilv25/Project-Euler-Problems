@@ -30,14 +30,14 @@ int main(int argc, char ** argv)
 			else
 			{
 				std::cout << "Error: Problem does not exist or has not been solved" << std::endl << std::endl;
-				std::cin.get();
+				std::cin.ignore(10000, '\n');
 				return -1;
 			}
 		}
 		catch(std::exception e)
 		{
 			std::cout << "Error: " << e.what();
-			std::cin.get();
+			std::cin.ignore(10000, '\n');
 			return -1;
 		}
 	}
@@ -45,7 +45,7 @@ int main(int argc, char ** argv)
 	{
 		std::cout << "Usage: Euler [problem number]" << std::endl;
 		std::cout << "Press enter to run all problems..." << std::endl;
-		std::cin.get();
+		std::cin.ignore(10000, '\n');
 
 		for (auto f : problems)
 		{
@@ -55,7 +55,7 @@ int main(int argc, char ** argv)
 	}
 
 	std::cout << "Press enter to exit application..." << std::endl;
-	std::cin.get();
+	std::cin.ignore(10000, '\n');
 
 	for (auto f : problems)
 		delete f.second;

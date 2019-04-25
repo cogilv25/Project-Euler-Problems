@@ -6,11 +6,7 @@ private:
 	bool loadFile(std::string filename);
 public:
 	std::string solution();
-	Problem67()
-	{
-		name = "Maximum path sum II";
-		layers = 100;
-	}
+	Problem67(){ name = "Maximum path sum II"; }
 	~Problem67()
 	{ 
 		delete[] path; 

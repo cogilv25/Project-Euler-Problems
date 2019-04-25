@@ -20,6 +20,7 @@ int problem18Data[]{
 
 std::string Problem18::solution()
 {
+	layers = 15;
 	path = problem18Data;
 	generateLayerStartIndices(layers);
 	return std::to_string(max());

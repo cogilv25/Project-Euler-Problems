@@ -2,13 +2,6 @@
 #include <fstream>
 //484 * 15 + 13 <- Just so I know if I break it
 
-/*
-TODO:
-1)I should have a try catch around stoi or at least comment that the problem
-	guarantees no mistakes in the file.
-
-*/
-
 bool Problem67::loadFile(std::string filename)
 {
 	std::ifstream file("../resources/triangle.txt");
@@ -30,11 +23,18 @@ bool Problem67::loadFile(std::string filename)
 
 std::string Problem67::solution()
 {
+	layers = 100;
 	generateLayerStartIndices(layers + 1);
 	path = new int[layerStartIndices[layers]];
 
-	if(!loadFile("../resources/triangle.txt"))
-		return "Error: Unable to open file: ../resources/triangle.txt";
+	try {
+		if (!loadFile("../resources/triangle.txt"))
+			return "Error: Unable to open file: ../resources/triangle.txt";
+	}
+	catch (std::exception e)
+	{
+		return e.what();
+	}
 
 	return std::to_string(max());
 }
