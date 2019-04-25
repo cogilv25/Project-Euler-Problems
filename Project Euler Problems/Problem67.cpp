@@ -1,7 +1,13 @@
 #include "Problem67.h"
 #include <fstream>
-//7273 <- Just so I know if I break it
+//484 * 15 + 13 <- Just so I know if I break it
 
+/*
+TODO:
+1)I should have a try catch around stoi or at least comment that the problem
+	guarantees no mistakes in the file.
+
+*/
 
 bool Problem67::loadFile(std::string filename)
 {

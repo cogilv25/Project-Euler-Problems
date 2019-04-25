@@ -1,7 +1,15 @@
 #include "Problem54.h"
 #include <fstream>
 #include <algorithm>
-//376 <- Just so I know if I break it
+//26 * 14 + 12 <- Just so I know if I break it
+
+/*
+TODO:
+1)Encode the cards rank into a single value that can be compared
+
+2)Try to reduce and/or eliminate if statements where possible
+
+*/
 
 int Problem54::cardValueToInt(char value)
 {

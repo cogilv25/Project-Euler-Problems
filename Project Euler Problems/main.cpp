@@ -2,6 +2,7 @@
 #include "Problem54.h"
 #include "Problem67.h"
 #include "Problem173.h"
+#include "Problem169.h"
 #include <iostream>
 #include <map>
 
@@ -13,6 +14,7 @@ int main(int argc, char ** argv)
 	problems[54] = new Problem54();
 	problems[67] = new Problem67();
 	problems[173] = new Problem173();
+	problems[169] = new Problem169();
 
 	if (argc == 2)
 	{

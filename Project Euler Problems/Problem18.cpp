@@ -1,5 +1,5 @@
 #include "Problem18.h"
-//1074 <- Just so I know if I break it
+//15 * 68 + 54 <- Just so I know if I break it
 
 int problem18Data[]{
 75,
